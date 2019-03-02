@@ -10,12 +10,17 @@ def staffLines(plines):
 	prevY = -THRESHHOLD - 1
 	for coords in plines:
 		if coords[0] > prevY + THRESHHOLD:
-			avg = reduce(lambda x, y: x + y, temp), len(temp)
+			avg = 0
+			for line in temp:
+				avg += line
+			avg /= len(temp)
 			lines.append(avg)
 			temp = []
 			prevY = coords[0]
 		temp.append(coords[0])
-	avg = reduce(lambda x, y: x + y, temp), len(temp)
+	for line in temp:
+		avg += line
+	avg /= len(temp)
 	lines.append(avg)
 	lines.pop(0)
 	return lines
