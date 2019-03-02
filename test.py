@@ -4,17 +4,17 @@ from midiutil import MIDIFile
 THRESHHOLD = 3
 
 def staffLines(plines):
-	plines = sorted(plines, key=lambda x: x[1])
+	plines = sorted(plines, key=lambda x: x[0])
 	lines = []
 	temp = [0]
 	prevY = -THRESHHOLD - 1
 	for coords in plines:
-		if coords[1] > prevY + THRESHHOLD:
+		if coords[0] > prevY + THRESHHOLD:
 			avg = reduce(lambda x, y: x + y, temp), len(temp)
 			lines.append(avg)
 			temp = []
-			prevY = coords[1]
-		temp.append(coords[1])
+			prevY = coords[0]
+		temp.append(coords[0])
 	avg = reduce(lambda x, y: x + y, temp), len(temp)
 	lines.append(avg)
 	lines.pop(0)
@@ -22,7 +22,6 @@ def staffLines(plines):
 
 def writeMIDI(fileName, notes):
 	
-	degrees  = [60, 62, 64, 65, 67, 69, 71, 72]  # MIDI note number
 	track    = 0
 	channel  = 0
 	time     = 0    # In beats
