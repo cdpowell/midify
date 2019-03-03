@@ -10,7 +10,7 @@ IMGPATH = 'data/images/'
 if __name__ == '__main__':
 
     """ Open image and basic information """
-    img_name = 'score_3.png'
+    img_name = 'score_2.png'
     img = cv2.imread(join(IMGPATH, img_name))
     img_c = img.copy()
     img_c_2 = img.copy()

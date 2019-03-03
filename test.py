@@ -58,7 +58,7 @@ def detectNotes(_img, _line, window=10):
 	img = _img.copy()
 	half = int(round(window / 2))
 
-	x = _line[1]
+	x = _line[1] + 20
 	while x < _line[3] - window:
 		color = 0
 		for x2 in range(x, x + window):
