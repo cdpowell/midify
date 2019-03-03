@@ -1,15 +1,18 @@
 import cv2
 import numpy as np
 from test import staffLines
+from os.path import join, splitext
 
+
+IMGPATH = 'data/images/'
 WHITE = 200
 BLACK = 100
 
 
 if __name__ == '__main__':
 
-    fname = 'data/images/score_3.png'
-    img = cv2.imread(fname)
+    img_name = 'score_3.png'
+    img = cv2.imread(join(IMGPATH, img_name))
     img_c = img.copy()
     img_size = img.shape[:2]
 
@@ -19,19 +22,20 @@ if __name__ == '__main__':
 
     edges = cv2.Canny(img_bw, 50, 150, apertureSize=3)
     p_lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 150, 100, 0, 0)
-    # for line in p_lines:
-    #     for x1, y1, x2, y2 in line:
-    #         cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
+    for line in p_lines:
+        for x1, y1, x2, y2 in line:
+            cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
+    cv2.imwrite(join(IMGPATH, splitext(img_name)[0] + '_lines_1.png'), img)
 
     #print(len(p_lines))
     p_lines, min_x, max_x = staffLines(p_lines)
+    print(len(p_lines))
 
     for line in p_lines:
-        cv2.line(img, (min_x, line), (max_x, line), (0, 0, 255), 2)
+        cv2.line(img_c, (min_x, line), (max_x, line), (0, 0, 255), 2)
 
-    cv2.imwrite('data/images/score_3_lines.jpg', img)
-
-
+        cv2.imwrite(join(IMGPATH, splitext(img_name)[0] + '_lines_2.png'), img_c)
 
     # y = 0
     # while y < img_size[0] - 10:
