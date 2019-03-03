@@ -1,29 +1,53 @@
 import cv2
 from midiutil import MIDIFile
 
-THRESHHOLD = 3
+THRESHHOLD = 5
+DISTANCE = 100
+DIST_BETWEEN_BARS = 20
 
-def staffLines(plines):
-	plines = sorted(plines, key=lambda x: x[0])
+def staffLines(_plines):
+	plines = _plines.tolist()
+	plines.sort(key=lambda x: x[0][1])
+	min_x = 9999999
+	max_x = -1
 	lines = []
 	temp = [0]
+	dist = 0
 	prevY = -THRESHHOLD - 1
 	for coords in plines:
-		if coords[0] > prevY + THRESHHOLD:
-			avg = 0
-			for line in temp:
-				avg += line
-			avg /= len(temp)
-			lines.append(avg)
+		if(abs(coords[0][0] - coords[0][2]) < 20):
+			continue
+		dist += abs(coords[0][0] - coords[0][2])
+		if coords[0][0] < min_x:
+			min_x = coords[0][0]
+		if coords[0][2] > max_x:
+			max_x = coords[0][2]
+		if coords[0][1] > prevY + THRESHHOLD:
+			if(dist > DISTANCE):
+				avg = 0
+				for line in temp:
+					avg += line
+				avg /= len(temp)
+				lines.append(int(avg))
 			temp = []
-			prevY = coords[0]
-		temp.append(coords[0])
-	for line in temp:
-		avg += line
-	avg /= len(temp)
-	lines.append(avg)
+			dist = 0
+			prevY = coords[0][1]
+		temp.append(coords[0][1])
+	if(dist > DISTANCE):
+		avg = 0
+		for line in temp:
+			avg += line
+		avg /= len(temp)
+		lines.append(int(avg))
 	lines.pop(0)
-	return lines
+	i = 1
+	while i < len(lines) - 1:
+		if lines[i] - lines[i-1] > DIST_BETWEEN_BARS and lines[i+1] - lines[i] > DIST_BETWEEN_BARS:
+			lines.pop(i)
+		else:
+			i+=1
+
+	return lines, min_x, max_x
 
 def writeMIDI(fileName, notes):
 	
