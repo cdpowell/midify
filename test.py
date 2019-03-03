@@ -5,6 +5,9 @@ THRESHHOLD = 5
 DISTANCE = 100
 DIST_BETWEEN_BARS = 20
 
+WHITE = 200
+BLACK = 45
+
 def staffLines(_plines):
 	plines = _plines.tolist()
 	plines.sort(key=lambda x: x[0][1])
@@ -48,6 +51,35 @@ def staffLines(_plines):
 			i+=1
 
 	return lines, min_x, max_x
+
+
+def detectNotes(_img, _line, window=10):
+	note_origins = list()
+	img = _img.copy()
+	half = int(round(window / 2))
+
+	x = _line[1]
+	while x < _line[3] - window:
+		color = 0
+		for x2 in range(x, x + window):
+			for y in range(_line[0] - half, _line[0] + half):
+				pixel_color = img[y, x2][0]
+				if pixel_color < 200:
+					color += 0
+				else:
+					color += 255
+		color /= 100
+		if color >= 200:
+			x += 5
+		elif color <= BLACK:
+			img[_line[0] - half, x] = [0, 0, 255]
+			img[_line[0] + half, x] = [0, 255, 0]
+			note_origins.append([y, x])
+
+		x += 1
+
+	return note_origins, img
+
 
 def writeMIDI(fileName, notes):
 	
