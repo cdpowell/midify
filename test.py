@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 from midiutil import MIDIFile
 
 THRESHHOLD = 5
@@ -74,9 +75,23 @@ def detectNotes(_img, _line, window=10):
 		elif color <= BLACK:
 			img[_line[0] - half, x] = [0, 0, 255]
 			img[_line[0] + half, x] = [0, 255, 0]
-			note_origins.append([y, x])
+			note_origins.append([_line[0] - half, x])
 
 		x += 1
+
+	""" Filter out overlapping origins """
+	c = 0
+	while c < len(note_origins) - 1:
+		if note_origins[c+1][1] - note_origins[c][1] <= 5:
+			note_origins[c] = [note_origins[c][0], int((note_origins[c][1] + note_origins[c+1][1]) / 2)]
+			note_origins.pop(c + 1)
+		else:
+			c += 1
+
+	""" Used only for visualization, not really needed """
+	for o in note_origins:
+		img[o[0], o[1]] = [255, 0, 0]
+		img[o[0] + window, o[1]] = [255, 0, 255]
 
 	return note_origins, img
 
